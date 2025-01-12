@@ -1,0 +1,133 @@
+body {
+  background-color: #0C151C;
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* font-family: 'BankGothic Md BT', sans-serif;
+font-family: 'Bank Gothic Light', sans-serif;
+font-family: 'BankGothic', sans-serif; */
+
+
+h1 {
+  color: white;
+}
+
+h2 {
+  font-family: 'BankGothic Md BT', sans-serif;
+  color: #fcab32;
+}
+
+.h3 {
+  color: white;
+  background-color: #1D5564;
+  font-family: 'BankGothic Md BT', sans-serif;
+}
+
+.chiffre {
+  font-family: 'DS-Digital', sans-serif;                                         
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 20% 50% 30%;
+  grid-template-rows: 10% 90%;
+  background-image: url(carte-bg.png);
+  background-position: top;
+  background-repeat: round;
+}
+
+#map__header {
+  grid-column: span 3;
+}
+
+#map__info_gauche {}
+
+#map__info_droite {}
+
+.map__image {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid #1D4D6A;
+  background: #0c1f2d72;
+}
+
+.map-svg {
+  width: 50%;
+  float: left;
+  background-color: #373737;
+  padding: 20px;
+  border-radius: 70px;
+}
+
+.map__image path {
+  fill: #112C3F;
+  stroke: #56C9E8;
+  stroke-width: 0.5px;
+  transition: fill 0.3s
+}
+
+.map__image path:hover {
+  fill: #56C9E8;
+}
+
+.map__hf {
+  border: 1px solid #1D4D6A;
+  background: url(grid.png);
+  background-repeat: round;
+}
+
+.department-name {
+  position: absolute;
+  background-color: white;
+  padding: 5px;
+  border-radius: 5px;
+  visibility: hidden;
+  font-size: 14px;
+  font-weight: bold;
+  pointer-events: none;
+  /* Pour éviter que le texte interfère avec la carte */
+}
+
+#container-carte-france {
+  cursor: url('circle-cursor.svg'), auto;
+}
+
+#visualization {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.map__pie {
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+#region-info {
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+#region-title {
+  color: #555;
+  margin-bottom: 15px;
+}
+
+#department-name {
+  position: absolute;
+  visibility: hidden;
+  top: 10px;
+  left: 10px;
+  font-size: 16px;
+  background-color: white;
+  padding: 5px;
+  border: 1px solid black;
+}
