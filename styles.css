@@ -11,12 +11,15 @@ font-family: 'BankGothic', sans-serif; */
 
 
 h1 {
-  color: white;
+  color: #56C9E8;
+  font-family: 'BankGothic Md BT', sans-serif;
+  font-size: 3vw;
 }
 
 h2 {
   font-family: 'BankGothic Md BT', sans-serif;
   color: #fcab32;
+  font-size: 2vw;
 }
 
 .h3 {
@@ -42,6 +45,9 @@ h2 {
 
 #map__header {
   grid-column: span 3;
+  display: flex;
+  margin: 0 0 0 20%;
+  align-items: center;
 }
 
 #map__info_gauche {}
@@ -75,7 +81,7 @@ h2 {
   fill: #56C9E8;
 }
 
-.map__hf {
+.map__transport {
   border: 1px solid #1D4D6A;
   background: url(grid.png);
   background-repeat: round;
@@ -154,6 +160,7 @@ h2 {
   border-radius: 5px;
   border: 1px solid #ccc;
   font-size: 12px;
-  pointer-events: none; /* Empêche les interactions avec la boîte */
+  pointer-events: none;
+  /* Empêche les interactions avec la boîte */
   z-index: 10;
 }

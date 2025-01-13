@@ -11,8 +11,7 @@
 </head>
 
 <body>
-    <script src="https://d3js.org/d3.v4.js"></script>
-    <div id="departement-name" class="departement-name"></div>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <section class="map" id="map">
         <div id="map__header">
             <h1>Les français et le changement climatique</h1>
@@ -606,22 +605,22 @@
                         </circle>
                     </g>
                 </svg>
-
             </div>
-            <div id="department-name" class="department-name"></div>
         </div>
         <div id="map__info_droite">
-            <h2>La région :</h2>
+            <h2>La région : <span id="departement-name-h2"></span></h2>
             <div class="h3">
-                <h3>Pourcentage d'hommes et de femmes :</h3>
+                <h3>Les moyens de transports utilisés :</h3>
             </div>
-            <div class="map__hf">
+            <div class="map__transport">
                 <svg width="100" height="100"> </svg>
             </div>
             <div class="map__pie">
                 <svg width="100" height="100"> </svg>
             </div>
         </div>
+    <div id="departement-name" class="departement-name"></div>
+
     </section>
     </main>
     <script src="map.js"></script>
