@@ -1,0 +1,162 @@
+// "init" est appelée dès que la fenêtre est chargée
+window.addEventListener("DOMContentLoaded", init, false);
+
+// Variables globales
+var map = document.querySelector('#map');
+var paths = document.querySelectorAll('.map__image path');
+
+// Tableaux pour les données
+var DeptTransportMeans = {};
+
+// Fonction d'initialisation
+function init() {
+  DeptTransportMeans = {
+      "Département 1": { voiture: 0.6, transports: 0.3, velo_pied: 0.05, train: 0.05, norep: 0 },
+      "Département 2": { voiture: 0.4, transports: 0.5, velo_pied: 0.05, train: 0.05, norep: 0.05 },
+      "Département 3": { voiture: 0.7, transports: 0.2, velo_pied: 0.05, train: 0.05, norep: 0.05 },
+  };
+  renderBarChart("Département 1"); // Affiche le graphique en barres par défaut
+  renderPieChart("Département 1"); // Affiche le graphique circulaire par défaut
+}
+
+// Fonction pour afficher un graphique en barres
+function renderBarChart(dep) {
+  var svg = d3.select('.map__transport').select("svg");
+  svg.selectAll("*").remove(); // Supprimer les anciens graphiques
+
+  var width = svg.attr("width");
+  var height = svg.attr("height");
+
+  // Utiliser les données du département
+  var data = DeptTransportMeans[dep] || {
+      voiture: 0.6,
+      transports: 0.3,
+      velo_pied: 0.05,
+      train: 0.05,
+      norep: 0
+  };
+
+  var transportData = [
+      { label: 'Voiture', value: data.voiture },
+      { label: 'Transports urbains', value: data.transports },
+      { label: 'Vélo / Pied', value: data.velo_pied },
+      { label: 'Train', value: data.train },
+      { label: 'No rep.', value: data.norep }
+  ];
+
+  var xScale = d3.scaleBand()
+      .range([0, width])
+      .domain(transportData.map(d => d.label))
+      .padding(0.4);
+
+  var yScale = d3.scaleLinear()
+      .range([height, 0])
+      .domain([0, 1]);
+
+  var g = svg.append("g");
+
+  // Ajouter les barres
+  g.selectAll(".bar")
+      .data(transportData)
+      .enter()
+      .append("rect")
+      .attr("class", "bar")
+      .attr("x", d => xScale(d.label))
+      .attr("y", d => yScale(d.value))
+      .attr("width", xScale.bandwidth())
+      .attr("height", d => height - yScale(d.value))
+      .attr("fill", "#56C9E8");
+
+  // Ajouter les axes
+  g.append("g")
+      .attr("transform", `translate(0, ${height})`)
+      .call(d3.axisBottom(xScale));
+
+  g.append("g")
+      .call(d3.axisLeft(yScale).ticks(5).tickFormat(d => `${Math.round(d * 100)}%`));
+}
+
+// Fonction pour afficher un graphique circulaire
+function renderPieChart(dep) {
+  var svg = d3.select('.map__pie').select("svg");
+  svg.selectAll("*").remove(); // Supprimer les anciens graphiques
+  var width = svg.attr("width"),
+      height = svg.attr("height"),
+      radius = Math.min(width, height) / 2;
+
+  var g = svg.append("g").attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+  var color = d3.scaleOrdinal(['#4daf4a', '#377eb8', '#ff7f00', '#984ea3', '#e41a1c']);
+  var pie = d3.pie();
+  var arc = d3.arc().innerRadius(0).outerRadius(radius);
+
+  // Utiliser les données du département
+  var data = DeptTransportMeans[dep] ? [
+      DeptTransportMeans[dep].voiture,
+      DeptTransportMeans[dep].transports,
+      DeptTransportMeans[dep].velo_pied,
+      DeptTransportMeans[dep].train
+  ] : [0.6, 0.3, 0.05, 0.05];
+
+  var arcs = g.selectAll("arc")
+      .data(pie(data))
+      .enter()
+      .append("g")
+      .attr("class", "arc");
+
+  arcs.append("path")
+      .attr("fill", (d, i) => color(i))
+      .attr("d", arc);
+
+  arcs.append("text")
+      .attr('dy', '20')
+      .attr('dx', '-30')
+      .text(dep);
+}
+
+// Gestion des interactions pour survol
+paths.forEach(function (path) {
+  path.addEventListener('mouseenter', function () {
+      var dep = path.getAttribute("name");
+      renderBarChart(dep); // Met à jour le graphique en barres avec les données du département
+      renderPieChart(dep); // Met à jour le graphique circulaire avec les données du département
+  });
+});
+
+// Gestion du clic sur un département pour fixer la sélection
+paths.forEach(function (path) {
+  path.addEventListener('click', function () {
+      var dep = path.getAttribute("name");
+      renderBarChart(dep); // Mise à jour du graphique en barres
+      renderPieChart(dep); // Mise à jour du graphique circulaire
+  });
+});
+// NOMS DES DEPARTEMENTS
+
+const departement_name = document.getElementById("departement-name");
+const departementNameSpan = document.getElementById("departement-name-h2");
+
+// Sélectionne tous les départements
+const departments = document.querySelectorAll("#carte-france path");
+
+// Ajoute les événements pour chaque département
+departments.forEach(department => {
+    department.addEventListener("mouseover", (event) => {
+        const departmentName = event.target.getAttribute("name"); // Récupère le nom du département
+        departement_name.textContent = departmentName;
+        departement_name.style.visibility = "visible";
+        departementNameSpan.textContent = departmentName; // Met à jour le contenu du span
+    });
+
+    department.addEventListener("mousemove", (event) => {
+        // Met à jour la position du departement_name
+        departement_name.style.top = event.pageY + 10 + "px";
+        departement_name.style.left = event.pageX + 10 + "px";
+    });
+
+    department.addEventListener("mouseout", () => {
+        // Cache le departement_name
+        departement_name.style.visibility = "hidden";
+        departementNameSpan.textContent = ""; // Vide le contenu du span au survol en dehors
+    });
+});
