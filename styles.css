@@ -26,7 +26,7 @@ h2 {
 }
 
 .chiffre {
-  font-family: 'DS-Digital', sans-serif;                                         
+  font-family: 'DS-Digital', sans-serif;
 }
 
 #map {
@@ -95,6 +95,19 @@ h2 {
 
 #container-carte-france {
   cursor: url('circle-cursor.svg'), auto;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#carte-france {
+  width: 100%;
+  height: auto;
+  /* Maintient les proportions */
+  max-height: 100%;
+  /* Empêche que la hauteur dépasse celle de la fenêtre */
 }
 
 #visualization {
@@ -130,4 +143,17 @@ h2 {
   background-color: white;
   padding: 5px;
   border: 1px solid black;
+}
+
+.departement-name {
+  position: absolute;
+  visibility: hidden;
+  background-color: white;
+  color: black;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 12px;
+  pointer-events: none; /* Empêche les interactions avec la boîte */
+  z-index: 10;
 }

@@ -1,194 +1,137 @@
+// "init" est appelée dès que la fenêtre est chargée
+window.addEventListener("DOMContentLoaded", init, false);
 
-//"init" est appelée dès que la fenêtre active
-window.addEventListener("DOMContentLoaded",init,false);
+// Variables globales
+var map = document.querySelector('#map');
+var paths = document.querySelectorAll('.map__image path');
 
-//variables globales
-var map = document.querySelector('#map') 
-
-var paths = document.querySelectorAll('.map__image path') 
-
-//var links = document.querySelectorAll('.map__list a') 
-
-var vizTopic = "transport";
-
-var regions = ['Alsace', 'Aquitaine', 'Auvergne', 'Bourgogne', 'Bretagne', 'Centre', 'ChampagneArdenne', 'Corse', 'FrancheComté',  'IledeFrance',  'LanguedocRoussillon', 'Limousin', 'Lorraine', 'MidiPyrénées', 'NordPasdeCalais',  'BasseNormandie',  'HauteNormandie',  'PaysdelaLoire', 'Picardie', 
-'PoitouCharentes', 'ProvenceAlpesCôted\'Azur',   'RhôneAlpes' ];
-
-
-// Mettre ici le code pour extraire les informations départementales
-//===============================
+// Tableaux pour les données
 var CSVData = [];
-var womenByDept = [];
 var peopleByDept = [];
-var womenByReg = [];
-var peopleByReg = [];
+var womenByDept = [];
 var DeptAgesTranspGESPeu = [];
 var DeptAgesTranspGESAssez = [];
 var DeptAgesTranspGESBeaucoup = [];
 var DeptAgesTranspGESPasdutout = [];
 
-//Cette fonction charge le fichier csv, fait les extractions utiles et remplit les tableaux
+// Fonction d'initialisation
 function init() {
-  //console.log( "findRegion =" + findRegion("Ile-de-France") );
-  d3.csv("barometre-representations-sociales-du-changement-climatique.csv", function(csv) { 
-      csv.map(function(d){ 
-            var CSVLine = {};
-            for(var key in d) {
-                   CSVLine[key]=d[key];
-            }
-           CSVData.push( CSVLine );
-           
-           var dep = CSVLine['Département'];
-           var regLine = CSVLine['Région'];
-           var transpGES = CSVLine['q18_i2. Causes GES transports'];
-           var age = CSVLine['S2. âge'];
-           //console.log("transpGES = " +  transpGES);
-           //console.log("Ages = " +  age);    
-           var reg = findRegion(regLine);   
-           //console.log("reg = " +  reg);    
-           var sex = CSVLine['S1. genre'];
-           //console.log("Sex = " +  sex); 
-           if(womenByDept[dep] == null ) 
-                   womenByDept[dep]  = 0;
-           if(peopleByDept[dep] == null ) 
-                   peopleByDept[dep] = 1;
-           else
-                   peopleByDept[dep] = peopleByDept[dep]  +1;
-            if(reg.length != 0)      
-            {        
-             for(let k=0; k< reg.length; k++)
-             {
-               if( transpGES == 'Peu') {
-           	  if(DeptAgesTranspGESPeu[reg[k]] == null ) 
-                   DeptAgesTranspGESPeu[reg[k]] = [];
-           	  else if(DeptAgesTranspGESPeu[reg[k]][age] == null ) 
-                   DeptAgesTranspGESPeu[reg[k]][age] = 0;
-           	  else         
-           	 {
-                   DeptAgesTranspGESPeu[reg[k]][age] = DeptAgesTranspGESPeu[reg[k]][age] + 1;  
-                   console.log("DeptAgesTranspGESPeu reg=" + reg[k] + ", ages=" + age +", val="  + DeptAgesTranspGESPeu[reg[k]][age] );
-           	 }
-              }
-             }
-           }
-           
-           if(reg.length != 0)      
-           {
-              for(let k=0; k< reg.length; k++)
-              {
-                if( womenByReg[reg[k]] == null ) 
-                   womenByReg[reg[k]]  = 0;
-                if( peopleByReg[reg[k]] == null ) 
-                   peopleByReg[reg[k]] = 1;
-                else     
-                   peopleByReg[reg[k]] = peopleByReg[reg[k]] + 1 ;
-              }
-           }
-           
-           if(sex == 'Une femme' ) { 
-                   womenByDept[dep] = womenByDept[dep] + 1 ;   
-                   if(reg.length != 0 ) {
-                        for(let k=0; k< reg.length; k++) {
-                          womenByReg[reg[k]] = womenByReg[reg[k]] + 1 ;
-                        }
-                   }
-           }  
-           //console.log("Departement=" + dep +", People = " +  peopleByDept[dep]);    
-           // mettre ici 
-       })
-  });     
+  d3.csv("barometre-representations-sociales-du-changement-climatique.csv", function (csv) {
+    csv.forEach(function (d) {
+      var dep = d['Département'];
+      var transpGES = d['q18_i2. Causes GES transports'];
+      var age = d['S2. âge'];
+      var sex = d['S1. genre'];
+
+      // Initialiser les données pour chaque département
+      if (!peopleByDept[dep]) peopleByDept[dep] = 0;
+      if (!womenByDept[dep]) womenByDept[dep] = 0;
+      if (!DeptAgesTranspGESPeu[dep]) DeptAgesTranspGESPeu[dep] = {};
+      if (!DeptAgesTranspGESAssez[dep]) DeptAgesTranspGESAssez[dep] = {};
+      if (!DeptAgesTranspGESBeaucoup[dep]) DeptAgesTranspGESBeaucoup[dep] = {};
+      if (!DeptAgesTranspGESPasdutout[dep]) DeptAgesTranspGESPasdutout[dep] = {};
+
+      // Compter les données pour chaque département
+      peopleByDept[dep]++;
+      if (sex === 'Une femme') womenByDept[dep]++;
+
+      // Comptabiliser les réponses par catégorie GES et âge
+      if (transpGES === 'Peu') {
+        if (!DeptAgesTranspGESPeu[dep][age]) DeptAgesTranspGESPeu[dep][age] = 0;
+        DeptAgesTranspGESPeu[dep][age]++;
+      }
+      // Répéter la logique pour "Assez", "Beaucoup", "Pas du tout"
+      if (transpGES === 'Assez') {
+        if (!DeptAgesTranspGESAssez[dep][age]) DeptAgesTranspGESAssez[dep][age] = 0;
+        DeptAgesTranspGESAssez[dep][age]++;
+      }
+      if (transpGES === 'Beaucoup') {
+        if (!DeptAgesTranspGESBeaucoup[dep][age]) DeptAgesTranspGESBeaucoup[dep][age] = 0;
+        DeptAgesTranspGESBeaucoup[dep][age]++;
+      }
+      if (transpGES === 'Pas du tout') {
+        if (!DeptAgesTranspGESPasdutout[dep][age]) DeptAgesTranspGESPasdutout[dep][age] = 0;
+        DeptAgesTranspGESPasdutout[dep][age]++;
+      }
+    });
+  });
 }
 
- 
-function findRegion(composedName) {
-   var nospace = composedName.replace(/\s/g, '');
-   nospace = nospace.replace(/\t/g, '');
-   nospace = nospace.replace(/-/g, '');
-   //console.log("nospace= "+nospace );
-   if(nospace == 'ÎledeFrance')
-      nospace = 'IledeFrance';
-   var names = [];
-   var k=0;
-   for(let i=0; i< regions.length; i++ ) {
-     if( nospace.includes(regions[i]) )
-       names[k++] = regions[i];
-   }
-   return names;
-}
-//===============================
- 
-//Cette fonction est appelée depuis "paths.forEach( function (path) ... )" plus bas
-//Elle visualise les informations concernant un département
-function render(region) {
-     //affichage dans le console pour le debugage
-    console.log("entering into render !");
-     
-    //==================================
-    var data = [];
-    //Enlever des espaces
-    var nospace = region.replace(/\s/g, '');
-    //Enlever des tab
-    nospace = nospace.replace(/\t/g, '');
-    //Enlever des tirets
-    nospace = nospace.replace(/-/g, '');
-     if(nospace == 'ÎledeFrance')
-        nospace = 'IledeFrance';
-    data.push(DeptAgesTranspGESPeu[nospace]["65 ans et +"]);
-    data.push(DeptAgesTranspGESPeu[nospace]["50-64 ans"]);
-    data.push(DeptAgesTranspGESPeu[nospace]["35-49 ans"]);
-    data.push(DeptAgesTranspGESPeu[nospace]["15-17 ans"]);
-    data.push(DeptAgesTranspGESPeu[nospace]["35-49 ans"]);
-    data.push(DeptAgesTranspGESPeu[nospace]["25-34 ans"]);
-    //console.log("data=" + data);
-     
-    //===================================
-    
-    //console.log(data);
-    //"map__pie" défini dans css
-    var svg = d3.select('.map__pie').select("svg"),
-			width = svg.attr("width"),
-			height = svg.attr("height"),
-			radius = Math.min(width, height) / 2,
-			g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-			
-    var color = d3.scaleOrdinal(['#4daf4a','#377eb8','#ff7f00','#984ea3','#e41a1c']);
-		// Generer "the pie"
-    var pie = d3.pie();
-		// Generer "the arcs"
-    var arc = d3.arc()
-					.innerRadius(0)
-					.outerRadius(radius);
-		//Generer "groups"
-    var arcs = g.selectAll("arc")
-					.data(pie(data))
-					.enter()
-					.append("g")
-					.attr("class", "arc")
+// Fonction de rendu pour un département
+function render(dep) {
+  console.log(`Affichage des données pour le département : ${dep}`);
 
-		//Dessiner "arc paths"
-		arcs.append("path")
-			.attr("fill", function(d, i) {
-				return color(i);
-			})
-			.attr("d", arc);
-	       arcs.append("text").attr('dy','20').attr('dx','-30').text(region);	
-    //}); 		
+  var data = [];
+  if (DeptAgesTranspGESPeu[dep]) {
+    data.push(DeptAgesTranspGESPeu[dep]["65 ans et +"] || 0);
+    data.push(DeptAgesTranspGESPeu[dep]["50-64 ans"] || 0);
+    data.push(DeptAgesTranspGESPeu[dep]["35-49 ans"] || 0);
+    data.push(DeptAgesTranspGESPeu[dep]["25-34 ans"] || 0);
+    data.push(DeptAgesTranspGESPeu[dep]["15-17 ans"] || 0);
+  }
+
+  var svg = d3.select('.map__pie').select("svg");
+  svg.selectAll("*").remove(); // Supprimer les anciens graphiques
+  var width = svg.attr("width"),
+    height = svg.attr("height"),
+    radius = Math.min(width, height) / 2;
+
+  var g = svg.append("g").attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+  var color = d3.scaleOrdinal(['#4daf4a', '#377eb8', '#ff7f00', '#984ea3', '#e41a1c']);
+  var pie = d3.pie();
+  var arc = d3.arc().innerRadius(0).outerRadius(radius);
+
+  var arcs = g.selectAll("arc")
+    .data(pie(data))
+    .enter()
+    .append("g")
+    .attr("class", "arc");
+
+  arcs.append("path")
+    .attr("fill", (d, i) => color(i))
+    .attr("d", arc);
+
+  arcs.append("text")
+    .attr('dy', '20')
+    .attr('dx', '-30')
+    .text(dep);
 }
 
-//Cette fonction est appelée automatiquement quand le curseur de souris entre ou quitte une région
-//"path" correspond à la balise "path" dans SVG
-paths.forEach( function (path) { 
-     //path.addEventListener('mouseenter', render);
-     path.addEventListener('mouseenter', function (e)  { 
-        //console.log(path.getAttribute("title") );  
-        render(path.getAttribute("title"));
-         
-     });   
-     path.addEventListener('mouseleave', function (e)   {
-     console.log("Leave")
-     d3.select(".map__pie").select("svg").select("g").remove();
-    } )
-})
+// Gestion des interactions
+paths.forEach(function (path) {
+  path.addEventListener('mouseenter', function () {
+    render(path.getAttribute("name"));
+  });
 
+  path.addEventListener('mouseleave', function () {
+    d3.select(".map__pie").select("svg").select("g").remove();
+  });
+});
 
+// NOMS DES DEPARTEMENTS
 
+const departement_name = document.getElementById("departement-name");
+
+// Sélectionne tous les départements
+const departments = document.querySelectorAll("#carte-france path");
+
+// Ajoute les événements pour chaque département
+departments.forEach(department => {
+    department.addEventListener("mouseover", (event) => {
+        const departmentName = event.target.getAttribute("name"); // Récupère le nom du département
+        departement_name.textContent = departmentName;
+        departement_name.style.visibility = "visible";
+    });
+
+    department.addEventListener("mousemove", (event) => {
+        // Met à jour la position du departement_name
+        departement_name.style.top = event.pageY + 10 + "px";
+        departement_name.style.left = event.pageX + 10 + "px";
+    });
+
+    department.addEventListener("mouseout", () => {
+        // Cache le departement_name
+        tooltip.style.visibility = "hidden";
+    });
+});
