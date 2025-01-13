@@ -52,60 +52,71 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
 
   // Fonction d'initialisation du graphique
   function renderBarChart(dep) {
-      var svg = d3.select('.map__transport').select("svg");
-      svg.selectAll("*").remove(); // Supprimer les anciens graphiques
+    var svg = d3.select('.map__transport').select("svg");
+    svg.selectAll("*").remove(); // Supprimer les anciens graphiques
 
-      var width = svg.attr("width");
-      var height = svg.attr("height");
+    var width = svg.attr("width");
+    var height = svg.attr("height");
 
-      // Utiliser les données du département
-      var data = DeptTransportMeans[dep] || {
-          voiture: 0.6,
-          transports: 0.3,
-          velo_pied: 0.05,
-          train: 0.05,
-          norep: 0
-      };
+    // Utiliser les données du département
+    var data = DeptTransportMeans[dep] || {
+        voiture: 0.6,
+        transports: 0.3,
+        velo_pied: 0.05,
+        train: 0.05,
+        norep: 0
+    };
 
-      var transportData = [
-          { label: 'Voiture', value: data.voiture },
-          { label: 'Transports urbains', value: data.transports },
-          { label: 'Vélo / Pied', value: data.velo_pied },
-          { label: 'Train', value: data.train },
-          { label: 'No rep.', value: data.norep }
-      ];
+    var transportData = [
+        { label: 'Voiture', value: data.voiture },
+        { label: 'Transports urbains', value: data.transports },
+        { label: 'Vélo / Pied', value: data.velo_pied },
+        { label: 'Train', value: data.train },
+        { label: 'No rep.', value: data.norep }
+    ];
 
-      var xScale = d3.scaleBand()
-          .range([0, width])
-          .domain(transportData.map(d => d.label))
-          .padding(0.4);
+    // Échelle pour l'axe horizontal (proportions)
+    var xScale = d3.scaleLinear()
+        .domain([0, 1])  // Plage de valeurs de 0 à 1
+        .range([0, width]);  // Échelle horizontale
 
-      var yScale = d3.scaleLinear()
-          .range([height, 0])
-          .domain([0, 1]);
+    // Couleurs pour chaque mode de transport
+    var color = d3.scaleOrdinal()
+        .domain(['Voiture', 'Transports urbains', 'Vélo / Pied', 'Train', 'No rep.'])
+        .range(['#4daf4a', '#377eb8', '#ff7f00', '#984ea3', '#e41a1c']);
 
-      var g = svg.append("g");
+    // Créer le groupe pour contenir les segments
+    var g = svg.append("g");
 
-      // Ajouter les barres
-      g.selectAll(".bar")
-          .data(transportData)
-          .enter()
-          .append("rect")
-          .attr("class", "bar")
-          .attr("x", d => xScale(d.label))
-          .attr("y", d => yScale(d.value))
-          .attr("width", xScale.bandwidth())
-          .attr("height", d => height - yScale(d.value))
-          .attr("fill", "#56C9E8");
+    // Ajouter les segments de la barre
+    var xPosition = 0;  // Position de départ pour la barre
 
-      // Ajouter les axes
-      g.append("g")
-          .attr("transform", `translate(0, ${height})`)
-          .call(d3.axisBottom(xScale));
+    transportData.forEach(function(d) {
+        g.append("rect")
+            .attr("x", xScale(xPosition))  // Position du segment sur l'axe horizontal
+            .attr("y", 0)  // La barre est sur l'axe horizontal, donc y = 0
+            .attr("width", xScale(d.value) - xScale(0))  // Largeur du segment (proportion du mode de transport)
+            .attr("height", height)  // La hauteur de la barre est la même pour tous les segments
+            .attr("fill", color(d.label));  // Couleur du segment
+        xPosition += d.value;  // Mettre à jour la position pour le prochain segment
 
-      g.append("g")
-          .call(d3.axisLeft(yScale).ticks(5).tickFormat(d => `${Math.round(d * 100)}%`));
-  }
+        // Ajouter les étiquettes de pourcentage sur chaque segment
+        g.append("text")
+            .attr("x", xScale(xPosition) - (xScale(d.value) / 2))  // Position horizontale centrée sur le segment
+            .attr("y", height / 2)  // Position verticale centrée dans la barre
+            .attr("dy", ".35em")  // Pour centrer verticalement le texte
+            .attr("fill", "white")  // Couleur du texte
+            .attr("text-anchor", "middle")  // Centrer le texte
+            .text(Math.round(d.value * 100) + "%");  // Afficher le pourcentage
+    });
+
+    // Ajouter l'axe horizontal
+    svg.append("g")
+        .attr("transform", `translate(0, ${height})`)
+        .call(d3.axisBottom(xScale).ticks(5).tickFormat(d => `${Math.round(d * 100)}%`));  // Afficher les pourcentages sur l'axe
+}
+
+
 
   // Fonction pour afficher un graphique circulaire
   function renderPieChart(dep) {
