@@ -4,12 +4,36 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
   // On prépare un objet pour stocker les données par département
   let DeptTransportMeans = {};
   let DeptGenderData = {};
+  let DeptGESData = {};
+  let nationalGESData = {};
+
+  const responseMap = {
+    'Assez': 0.75,
+    'Beaucoup': 1,
+    'Peu': 0.5,
+    'Pas du tout': 0.25,
+    'No rep.': 0
+  };
+
+  const axes = [
+    'q18_i1', 'q18_i2', 'q18_i3', 'q18_i4', 'q18_i5',
+    'q18_i6', 'q18_i7', 'q18_i8', 'q18_i9', 'q18_i10'
+  ];
 
   // Remplir DeptTransportMeans et DeptGenderData avec les données pertinentes pour chaque département
   data.forEach(function (row) {
     const department = row["Département"]; // Récupérer le département
     const transport = row["s22. Mode de transport"]; // Récupérer le mode de transport
     const genre = row["S1. genre"]; // Récupérer le genre
+
+    if (!DeptGESData[department]) {
+      DeptGESData[department] = {};
+    }
+
+    axes.forEach(function (axis) {
+      const value = row[axis];
+      DeptGESData[department][axis] = responseMap[value] || 0;
+    });
 
     // Calculer la proportion pour chaque mode de transport
     if (!DeptTransportMeans[department]) {
@@ -39,7 +63,7 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
     if (!DeptGenderData[department]) {
       DeptGenderData[department] = { homme: 0, femme: 0 };
     }
-    
+
     if (genre === "Un homme") {
       DeptGenderData[department].homme += 1;
     } else if (genre === "Une femme") {
@@ -47,13 +71,24 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
     }
   });
 
+  // Calculer la moyenne nationale
+  const nationalSums = axes.reduce((acc, axis) => {
+    acc[axis] = 0;
+    data.forEach(function (row) {
+        const value = row[axis];
+        acc[axis] += responseMap[value] || 0;
+    });
+    acc[axis] /= data.length;
+    return acc;
+}, {});
+
   // Normaliser les données pour que chaque valeur soit entre 0 et 1 (proportions)
   Object.keys(DeptTransportMeans).forEach(function (dep) {
     const total = DeptTransportMeans[dep].voiture +
-                  DeptTransportMeans[dep].transports +
-                  DeptTransportMeans[dep].velo_pied +
-                  DeptTransportMeans[dep].train +
-                  DeptTransportMeans[dep].norep;
+      DeptTransportMeans[dep].transports +
+      DeptTransportMeans[dep].velo_pied +
+      DeptTransportMeans[dep].train +
+      DeptTransportMeans[dep].norep;
 
     // Normaliser les données
     DeptTransportMeans[dep].voiture /= total;
@@ -62,6 +97,89 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
     DeptTransportMeans[dep].train /= total;
     DeptTransportMeans[dep].norep /= total;
   });
+
+   // Fonction pour dessiner le graphique en araignée
+   function renderRadarChart(dep) {
+    const svg = d3.select('.map__spider svg');
+    svg.selectAll("*").remove(); // Supprimer les anciens graphiques
+
+    const width = +svg.attr("width");
+    const height = +svg.attr("height");
+    const radius = Math.min(width, height) / 2;
+    const angleSlice = Math.PI * 2 / axes.length;
+
+    // Créer un groupe central
+    const g = svg.append("g")
+        .attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+    // Créer l'échelle pour les axes
+    const radiusScale = d3.scaleLinear().range([0, radius]);
+
+    // Ajouter les axes
+    const axesData = axes.map(axis => DeptGESData[dep][axis] || 0);
+    const nationalData = axes.map(axis => nationalSums[axis] || 0);
+
+    // Créer les arcs pour chaque axe
+    const arc = d3.arc().innerRadius(0).outerRadius(function(d) { return radiusScale(d); });
+
+    const radarLine = d3.lineRadial()
+        .radius(function(d) { return radiusScale(d); })
+        .angle(function(d, i) { return i * angleSlice; });
+
+    // Créer la ligne pour les données départementales
+    g.append("path")
+        .datum(axesData)
+        .attr("class", "radar-line")
+        .attr("d", radarLine)
+        .style("fill", "rgba(0, 100, 255, 0.7)") // Couleur du département
+        .style("stroke", "blue")
+        .style("stroke-width", 2);
+
+    // Créer la ligne pour les données nationales
+    g.append("path")
+        .datum(nationalData)
+        .attr("class", "radar-line")
+        .attr("d", radarLine)
+        .style("fill", "rgba(255, 100, 0, 0.7)") // Couleur nationale
+        .style("stroke", "orange")
+        .style("stroke-width", 2);
+
+    // Ajouter les axes (lignes des axes)
+    g.selectAll(".axis")
+        .data(axes)
+        .enter()
+        .append("line")
+        .attr("class", "axis")
+        .attr("x1", 0)
+        .attr("y1", 0)
+        .attr("x2", function(d, i) {
+            return radiusScale(1) * Math.cos(angleSlice * i - Math.PI / 2);
+        })
+        .attr("y2", function(d, i) {
+            return radiusScale(1) * Math.sin(angleSlice * i - Math.PI / 2);
+        })
+        .style("stroke", "#ccc")
+        .style("stroke-width", 1);
+
+    // Ajouter les étiquettes des axes
+    g.selectAll(".axis-label")
+        .data(axes)
+        .enter()
+        .append("text")
+        .attr("class", "axis-label")
+        .attr("x", function(d, i) {
+            return radiusScale(1.1) * Math.cos(angleSlice * i - Math.PI / 2);
+        })
+        .attr("y", function(d, i) {
+            return radiusScale(1.1) * Math.sin(angleSlice * i - Math.PI / 2);
+        })
+        .text(function(d, i) {
+            return axes[i].replace('q18_', '').replace('_', ' ').toUpperCase();
+        })
+        .style("font-size", "12px")
+        .style("fill", "#000");
+}
+
 
   // Fonction pour afficher le graphique des modes de transport en barres horizontales
   function renderBarChart(dep) {
@@ -177,6 +295,7 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       var dep = path.getAttribute("name");
       renderBarChart(dep); // Met à jour le graphique en barres avec les données du département
       renderPieChart(dep); // Met à jour le graphique circulaire avec les données du département
+      renderRadarChart(dep);
     });
   });
 });
