@@ -21,7 +21,7 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
   const color3 = '#E12436';
   const color4 = '#1D5564';
   const color5 = '#FFFFFF';
-  
+
 
   const axes = [
     'q18_i1. Causes GES activités industrielles', 'q18_i2. Causes GES transports', 'q18_i3. Causes GES bâtiments', 'q18_i4. Causes GES agriculture', 'q18_i5. Causes GES centrales de production d\'électricité au gaz, charbon ou fuel',
@@ -170,8 +170,8 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       .datum(axesData)
       .attr("class", "radar-line")
       .attr("d", radarLine)
-      .style("fill", "rgba(0, 100, 255, 0.7)") // Couleur du département
-      .style("stroke", "blue")
+      .style("fill", "white") // Couleur du département
+      .style("stroke", "white")
       .style("stroke-width", 2);
 
     // Créer la ligne pour les données nationales
@@ -179,8 +179,8 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       .datum(nationalData)
       .attr("class", "radar-line")
       .attr("d", radarLine)
-      .style("fill", "rgba(255, 100, 0, 0.7)") // Couleur nationale
-      .style("stroke", "orange")
+      .style("fill", "rgba(86, 200, 232, 0.59)") // Couleur nationale
+      .style("stroke", "white")
       .style("stroke-width", 2);
 
     // Ajouter les axes (lignes des axes)
@@ -216,7 +216,8 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
         return axes[i].replace('q18_', '').replace('_', ' ').toUpperCase();
       })
       .style("font-size", "12px")
-      .style("fill", "#000");
+      .attr("font-family", "'DS-Digital', sans-serif") // Appliquer la police
+      .style("fill", "#fff");
   }
   // Fonction pour afficher le graphique des modes de transport en barres horizontales
   function renderBarChart(dep) {
@@ -229,30 +230,30 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
 
     // Utiliser les données du département
     var data = DeptTransportMeans[dep] || {
-        voiture: 0.6,
-        transports: 0.3,
-        velo_pied: 0.05,
-        train: 0.05,
-        norep: 0
+      voiture: 0.6,
+      transports: 0.3,
+      velo_pied: 0.05,
+      train: 0.05,
+      norep: 0
     };
 
     var transportData = [
-        { label: 'Voiture', value: data.voiture },
-        { label: 'Transports urbains', value: data.transports },
-        { label: 'Vélo / Pied', value: data.velo_pied },
-        { label: 'Train', value: data.train },
-        { label: 'No rep.', value: data.norep }
+      { label: 'Voiture', value: data.voiture },
+      { label: 'Transports urbains', value: data.transports },
+      { label: 'Vélo / Pied', value: data.velo_pied },
+      { label: 'Train', value: data.train },
+      { label: 'No rep.', value: data.norep }
     ];
 
     // Échelle pour l'axe horizontal (proportions)
     var xScale = d3.scaleLinear()
-        .domain([0, 1])  // Plage de valeurs de 0 à 1
-        .range([0, width]);  // Échelle horizontale
+      .domain([0, 1])  // Plage de valeurs de 0 à 1
+      .range([0, width]);  // Échelle horizontale
 
     // Couleurs pour chaque mode de transport
     var color = d3.scaleOrdinal()
-        .domain(['Voiture', 'Transports urbains', 'Vélo / Pied', 'Train', 'No rep.'])
-        .range([color1, color2, color3, color4, color5]);
+      .domain(['Voiture', 'Transports urbains', 'Vélo / Pied', 'Train', 'No rep.'])
+      .range([color1, color2, color3, color4, color5]);
 
     // Créer le groupe pour contenir les segments
     var g = svg.append("g");
@@ -261,30 +262,31 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
     var xPosition = 0; // Position de départ pour la barre
 
     transportData.forEach(function (d) {
-        g.append("rect")
-            .attr("x", xScale(xPosition)) // Position du segment sur l'axe horizontal
-            .attr("y", 0) // La barre est sur l'axe horizontal, donc y = 0
-            .attr("width", xScale(d.value) - xScale(0)) // Largeur du segment
-            .attr("height", height - marginBottom) // Réduire la hauteur pour laisser de la place pour les pourcentages
-            .attr("fill", color(d.label)); // Couleur du segment
-            
+      g.append("rect")
+        .attr("x", xScale(xPosition)) // Position du segment sur l'axe horizontal
+        .attr("y", 0) // La barre est sur l'axe horizontal, donc y = 0
+        .attr("width", xScale(d.value) - xScale(0)) // Largeur du segment
+        .attr("height", height - marginBottom) // Réduire la hauteur pour laisser de la place pour les pourcentages
+        .attr("fill", color(d.label)); // Couleur du segment
 
-        // Ajouter les étiquettes de pourcentage en bas de chaque segment
-        g.append("text")
-            .attr("x", xScale(xPosition) + (xScale(d.value) / 2)) // Position horizontale centrée sur le segment
-            .attr("y", height - marginBottom + 15) // Position verticale sous la barre
-            .attr("fill", "white") // Couleur du texte
-            .attr("text-anchor", "middle") // Centrer le texte
-            .text(Math.round(d.value * 100) + "%") // Afficher le pourcentage
-            .attr("font-family", "'DS-Digital', sans-serif"); // Appliquer la police
 
-        xPosition += d.value; // Mettre à jour la position pour le prochain segment
+      // Ajouter les étiquettes de pourcentage en bas de chaque segment
+      g.append("text")
+        .attr("x", xScale(xPosition) + (xScale(d.value) / 2)) // Position horizontale centrée sur le segment
+        .attr("y", height - marginBottom + 15) // Position verticale sous la barre
+        .attr("fill", "white") // Couleur du texte
+        .attr("text-anchor", "middle") // Centrer le texte
+        .text(Math.round(d.value * 100) + "%") // Afficher le pourcentage
+        .attr("font-family", "'DS-Digital', sans-serif"); // Appliquer la police
+
+      xPosition += d.value; // Mettre à jour la position pour le prochain segment
     });
 
     // Ajouter l'axe horizontal
     svg.append("g")
-        // .attr("transform", translate(0, ${height - marginBottom}))
-        .call(d3.axisBottom(xScale).ticks(5).tickFormat(d => `${Math.round(d * 100)}%`));}
+      // .attr("transform", translate(0, ${height - marginBottom}))
+      .call(d3.axisBottom(xScale).ticks(5).tickFormat(d => `${Math.round(d * 100)}%`));
+  }
 
   // Fonction pour afficher le graphique circulaire des impacts (hypotheses/certitudes)
   function renderPieChart(dep) {
@@ -296,7 +298,7 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
 
     var g = svg.append("g").attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-    var color = d3.scaleOrdinal([color1, color2]); // Couleurs pour hypothese et certitude
+    var color = d3.scaleOrdinal([color4, "white"]); // Couleurs pour hypothese et certitude
     var pie = d3.pie();
     var arc = d3.arc().innerRadius(0).outerRadius(radius);
 
@@ -319,6 +321,7 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
 
     // Ajouter les étiquettes de pourcentage pour chaque segment
     arcs.append("text")
+      .attr("font-family", "'DS-Digital', sans-serif") // Appliquer la police
       .attr('dy', '20')
       .attr('dx', '-30')
       .text(function (d) {
@@ -329,10 +332,10 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
   function renderSympathyChart(dep) {
     var svg = d3.select('.map__sympathie svg');
     svg.selectAll("*").remove(); // Supprimer les anciens graphiques
-  
+
     var width = svg.attr("width");
     var height = svg.attr("height");
-  
+
     // Utiliser les données de sympathie pour chaque département
     var data = DeptSympathyData[dep] || {
       noSympathy: 0,
@@ -340,7 +343,7 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       enoughSympathy: 0,
       aLotOfSympathy: 0
     };
-  
+
     // Mettre les données dans un tableau pour dessiner le graphique
     var sympathyData = [
       { label: 'Pas de sympathie', value: data.noSympathy },
@@ -348,36 +351,36 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       { label: 'Assez de sympathie', value: data.enoughSympathy },
       { label: 'Beaucoup de sympathie', value: data.aLotOfSympathy }
     ];
-  
+
     // Calculer la somme totale des valeurs
     var total = sympathyData.reduce((sum, d) => sum + d.value, 0);
-  
+
     // Si la somme totale est supérieure à 0, normaliser les valeurs
     if (total > 0) {
       sympathyData.forEach(d => {
         d.value = d.value / total;  // Calculer la proportion de chaque valeur
       });
     }
-  
+
     // Échelle pour l'axe vertical (proportions)
     var yScale = d3.scaleLinear()
       .domain([0, 1])  // Plage de valeurs de 0 à 1
       .range([height, 0]);  // Échelle verticale
-  
+
     // Échelle pour l'axe horizontal (espacement des barres)
     var xScale = d3.scaleBand()
       .domain(sympathyData.map(d => d.label))  // Les étiquettes des barres
       .range([0, width])  // Plage horizontale
       .padding(0.1);  // Espacement entre les barres
-  
+
     // Couleurs pour chaque niveau de sympathie
     var color = d3.scaleOrdinal()
       .domain(['Pas de sympathie', 'Peu de sympathie', 'Assez de sympathie', 'Beaucoup de sympathie'])
       .range([color1, color2, color3, color4]);
-  
+
     // Créer le groupe pour contenir les barres
     var g = svg.append("g");
-  
+
     // Ajouter les barres verticales
     g.selectAll(".bar")
       .data(sympathyData)
@@ -388,7 +391,7 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       .attr("width", xScale.bandwidth())  // Largeur des barres
       .attr("height", d => height - yScale(d.value))  // Hauteur de la barre, calculée en fonction de la valeur
       .attr("fill", d => color(d.label));  // Couleur des barres
-  
+
     // Ajouter les étiquettes de pourcentage sur chaque barre
     g.selectAll(".text")
       .data(sympathyData)
@@ -397,30 +400,58 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       .attr("y", d => yScale(d.value) - 5)  // Position verticale au-dessus de la barre
       .attr("dy", ".35em")  // Pour centrer verticalement le texte
       .attr("fill", "white")  // Couleur du texte
+      .attr("font-family", "'DS-Digital', sans-serif") // Appliquer la police
       .attr("text-anchor", "middle")  // Centrer le texte
       .text(d => Math.round(d.value * 100) + "%");  // Afficher le pourcentage
-  
+
     // Ajouter l'axe horizontal pour les étiquettes des barres
     svg.append("g")
       .attr("transform", `translate(0, ${height})`)  // Déplacer l'axe à la base du graphique
       .call(d3.axisBottom(xScale));  // Afficher les étiquettes sur l'axe horizontal
-  
+
     // Ajouter l'axe vertical
     svg.append("g")
       .call(d3.axisLeft(yScale).ticks(5).tickFormat(d => `${Math.round(d * 100)}%`));  // Afficher les pourcentages sur l'axe vertical
   }
-  
-  
+
+
   var paths = document.querySelectorAll('#carte-france path');
 
-  // Gestion des interactions pour survol
-  paths.forEach(function (path) {
-    path.addEventListener('mouseenter', function () {
-      var dep = path.getAttribute("name");
-      renderBarChart(dep); // Met à jour le graphique en barres avec les données du département
-      renderPieChart(dep); // Met à jour le graphique circulaire avec les données du département
-      renderRadarChart(dep);
-      renderSympathyChart(dep);
+  const departement_name = document.getElementById("departement-name");
+  const departementNameSpan = document.getElementById("departement-name-h2");
+
+  // Sélectionne tous les départements
+  const departments = document.querySelectorAll("#carte-france path");
+
+  departments.forEach(department => {
+    department.addEventListener("mouseover", (event) => {
+      const departmentName = event.target.getAttribute("name"); // Récupère le nom du département
+      departement_name.textContent = departmentName;
+      departement_name.style.visibility = "visible";
+      departementNameSpan.textContent = departmentName; // Met à jour le contenu du span
+    });
+
+    department.addEventListener("mousemove", (event) => {
+      // Met à jour la position du departement_name
+      departement_name.style.top = event.pageY + 10 + "px";
+      departement_name.style.left = event.pageX + 10 + "px";
+    });
+
+    department.addEventListener("mouseout", () => {
+      // Cache le departement_name
+      departement_name.style.visibility = "hidden";
+      departementNameSpan.textContent = ""; // Vide le contenu du span au survol en dehors
+    });
+
+    // Gestion des interactions pour survol
+    paths.forEach(function (path) {
+      path.addEventListener('mouseenter', function () {
+        var dep = path.getAttribute("name");
+        renderBarChart(dep); // Met à jour le graphique en barres avec les données du département
+        renderPieChart(dep); // Met à jour le graphique circulaire avec les données du département
+        renderRadarChart(dep);
+        renderSympathyChart(dep);
+      });
     });
   });
 });

@@ -20,7 +20,7 @@ h2 {
   font-family: 'BankGothic Md BT', sans-serif;
   color: #fcab32;
   font-size: 2vw;
-
+  position: absolute;
 }
 
 .h3 {
@@ -197,19 +197,19 @@ h3 {
   height: 10px;
 }
 
-#voiture .square {
+#voiture .square, #pas .square {
   background-color: #56C9E8;
 }
 
-#transports .square {
+#transports .square, #peu .square {
   background-color: #FCAB32;
 }
 
-#velo .square {
+#velo .square, #assez .square {
   background-color: #E12436;
 }
 
-#train .square, #hypothese .square {
+#train .square, #hypothese .square, #beaucoup .square {
   background-color: #1D5564;
 }
 

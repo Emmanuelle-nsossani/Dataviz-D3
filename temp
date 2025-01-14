@@ -451,7 +451,7 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
   
       var g = svg.append("g").attr("transform", translate(${width / 2}, ${height / 2}));
   
-      var color = d3.scaleOrdinal([color4, color5]); // Couleurs pour hypothese et certitude
+      var color = d3.scaleOrdinal([color1, color2]); // Couleurs pour hypothese et certitude
       var pie = d3.pie();
       var arc = d3.arc().innerRadius(0).outerRadius(radius);
   

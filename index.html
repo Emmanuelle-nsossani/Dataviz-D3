@@ -59,7 +59,6 @@
                 </div>
             </div>
         </div>
-        </div>
         <div class="map__image">
             <div id="container-carte-france">
                 <?xml version="1.0"?>
@@ -651,18 +650,36 @@
             </div>
         </div>
         <div id="map__info_droite">
-            <h2>La région : <span id="departement-name-h2"></span></h2>
+            <h2><span id="departement-name-h2"></span></h2>
             <div class="container-graph">
                 <div class="map__spider">
                     <div class="h3">
                         <h3>Cause des GES</h3>
                     </div>
-                    <svg width="350" height="350"> </svg>
+                    <svg width="300" height="300"> </svg>
                 </div>
             </div>
-
-            <div class="map__sympathie">
-                <svg width="400" height="400"> </svg>
+            <div class="container-graph">
+                <div class="map__sympathie">
+                    <div class="h3">
+                        <h3>Sympathie mouvements écologistes</h3>
+                    </div>
+                    <svg width="250" height="250"> </svg>
+                </div>
+                <div class="legende">
+                    <div class="container-legende" id="pas">
+                        <div class="square"></div><span></span>Pas<span class="pourcentage"></span>
+                    </div>
+                    <div class="container-legende" id="peu">
+                        <div class="square"></div><span></span>Peu <span class="pourcentage"></span>
+                    </div>
+                    <div class="container-legende" id="assez">
+                        <div class="square"></div><span></span>Assez<span class="pourcentage"></span>
+                    </div>
+                    <div class="container-legende" id="beaucoup">
+                        <div class="square"></div><span></span>Beaucoup <span class="pourcentage"></span>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="departement-name" class="departement-name"></div>
