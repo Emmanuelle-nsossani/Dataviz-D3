@@ -16,6 +16,13 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
     'No rep.': 0
   };
 
+  const color1 = '#56C9E8';
+  const color2 = '#FCAB32';
+  const color3 = '#E12436';
+  const color4 = '#1D5564';
+  const color5 = '#FFFFFF';
+  
+
   const axes = [
     'q18_i1. Causes GES activités industrielles', 'q18_i2. Causes GES transports', 'q18_i3. Causes GES bâtiments', 'q18_i4. Causes GES agriculture', 'q18_i5. Causes GES centrales de production d\'électricité au gaz, charbon ou fuel',
     'q18_i6. Causes GES traitement des déchets', 'q18_i7. Causes GES destruction des forêts', 'q18_i8. Causes GES centrales nucléaires', 'q18_i9. Causes GES activité volcanique', 'q18_i10. Causes GES bombes aérosols'
@@ -244,7 +251,7 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
     // Couleurs pour chaque mode de transport
     var color = d3.scaleOrdinal()
       .domain(['Voiture', 'Transports urbains', 'Vélo / Pied', 'Train', 'No rep.'])
-      .range(['#4daf4a', '#377eb8', '#ff7f00', '#984ea3', '#e41a1c']);
+      .range([color1, color2, color3, color4, color5]);
 
     // Créer le groupe pour contenir les segments
     var g = svg.append("g");
@@ -287,7 +294,7 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
 
     var g = svg.append("g").attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-    var color = d3.scaleOrdinal(['#4daf4a', '#377eb8']); // Couleurs pour hypothese et certitude
+    var color = d3.scaleOrdinal([color1, color2]); // Couleurs pour hypothese et certitude
     var pie = d3.pie();
     var arc = d3.arc().innerRadius(0).outerRadius(radius);
 
@@ -364,7 +371,7 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
     // Couleurs pour chaque niveau de sympathie
     var color = d3.scaleOrdinal()
       .domain(['Pas de sympathie', 'Peu de sympathie', 'Assez de sympathie', 'Beaucoup de sympathie'])
-      .range(['#e41a1c', '#ff7f00', '#4daf4a', '#377eb8']);
+      .range([color1, color2, color3, color4]);
   
     // Créer le groupe pour contenir les barres
     var g = svg.append("g");
@@ -415,4 +422,3 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
     });
   });
 });
-

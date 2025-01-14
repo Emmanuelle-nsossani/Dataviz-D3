@@ -11,7 +11,7 @@ font-family: 'BankGothic', sans-serif; */
 
 
 h1 {
-  color: #56C9E8;
+  color: #fcab32;
   font-family: 'BankGothic Md BT', sans-serif;
   font-size: 3vw;
 }
@@ -20,12 +20,28 @@ h2 {
   font-family: 'BankGothic Md BT', sans-serif;
   color: #fcab32;
   font-size: 2vw;
+
 }
 
 .h3 {
   color: white;
   background-color: #1D5564;
   font-family: 'BankGothic Md BT', sans-serif;
+  margin-bottom: 20px;
+}
+
+h3 {
+  margin: 0;
+}
+
+.container-graph {
+  border-top: 1px solid #56C9E8;
+  border-bottom: 1px solid #56C9E8;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 20%;
+  background-color: #1d556466;
+  align-items: center;
 }
 
 .chiffre {
@@ -51,12 +67,12 @@ h2 {
 }
 
 #map__info_gauche {
-  grid-row: 1 / 3;
+  grid-row: 2 / 3;
   grid-column: 1;
 }
 
 #map__info_droite {
-  grid-row: 1 / 3;
+  grid-row: 2 / 3;
   grid-column: 3;
 }
 
@@ -89,8 +105,6 @@ h2 {
 }
 
 .map__transport {
-  border: 1px solid #1D4D6A;
-  background: url(grid.png);
   background-repeat: round;
 }
 
@@ -170,4 +184,43 @@ h2 {
   pointer-events: none;
   /* Empêche les interactions avec la boîte */
   z-index: 10;
+}
+
+.legende {
+  margin-top: 20px;
+  color: white;
+  font-family: 'DS-Digital', sans-serif;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  width: 100%;
+}
+
+.container-legende {
+  display: flex;
+  gap: 5px;
+}
+
+.square {
+  width: 10px;
+  height: 10px;
+}
+
+#voiture .square {
+  background-color: #56C9E8;
+}
+
+#transports .square {
+  background-color: #FCAB32;
+}
+
+#velo .square {
+  background-color: #E12436;
+}
+
+#train .square {
+  background-color: #1D5564;
+}
+
+#rien .square {
+  background-color: #FFFFFF;
 }

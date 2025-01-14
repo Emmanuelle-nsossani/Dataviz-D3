@@ -17,12 +17,35 @@
             <h1>Les français et le changement climatique</h1>
         </div>
         <div id="map__info_gauche">
-            <div class="h3">
-                <h3>Les moyens de transports utilisés :</h3>
+            <div class="container-graph">
+                <div class="h3">
+                    <h3>Les moyens de transports utilisés :</h3>
+                </div>
+                <div class="map__transport">
+                    <svg width="300" height="50"> </svg>
+                </div>
+                <div class="legende">
+                    <div class="container-legende" id="voiture">
+                        <div class="square"></div><span></span>Vélo <span class="pourcentage"></span>
+                    </div>
+                    <div class="container-legende" id="transports">
+                        <div class="square"></div><span></span>Transports <span class="pourcentage"></span>
+                    </div>
+                    <div class="container-legende" id="velo">
+                        <div class="square"></div><span></span>Vélo ou à pied <span class="pourcentage"></span>
+                    </div>
+                    <div class="container-legende" id="train">
+                        <div class="square"></div><span></span>Train <span class="pourcentage"></span>
+                    </div>
+                    <div class="container-legende" id="rien">
+                        <div class="square"></div><span></span>Rien <span class="pourcentage"></span>
+                    </div>
+                </div>
             </div>
-            <div class="map__transport">
-                <svg width="300" height="100"> </svg>
+            <div class="map__pie">
+                <svg width="100" height="100"> </svg>
             </div>
+        </div>
         </div>
         <div class="map__image">
             <div id="container-carte-france">
@@ -616,15 +639,6 @@
         </div>
         <div id="map__info_droite">
             <h2>La région : <span id="departement-name-h2"></span></h2>
-            <div class="h3">
-                <h3>Les moyens de transports utilisés :</h3>
-            </div>
-            <div class="map__transport">
-                <svg width="100" height="100"> </svg>
-            </div>
-            <div class="map__pie">
-                <svg width="100" height="100"> </svg>
-            </div>
             <div class="map__spider">
                 <svg width="400" height="400"> </svg>
             </div>
