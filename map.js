@@ -225,64 +225,66 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
 
     var width = svg.attr("width");
     var height = svg.attr("height");
+    var marginBottom = 20; // Ajouter une marge pour afficher les pourcentages en bas
 
     // Utiliser les données du département
     var data = DeptTransportMeans[dep] || {
-      voiture: 0.6,
-      transports: 0.3,
-      velo_pied: 0.05,
-      train: 0.05,
-      norep: 0
+        voiture: 0.6,
+        transports: 0.3,
+        velo_pied: 0.05,
+        train: 0.05,
+        norep: 0
     };
 
     var transportData = [
-      { label: 'Voiture', value: data.voiture },
-      { label: 'Transports urbains', value: data.transports },
-      { label: 'Vélo / Pied', value: data.velo_pied },
-      { label: 'Train', value: data.train },
-      { label: 'No rep.', value: data.norep }
+        { label: 'Voiture', value: data.voiture },
+        { label: 'Transports urbains', value: data.transports },
+        { label: 'Vélo / Pied', value: data.velo_pied },
+        { label: 'Train', value: data.train },
+        { label: 'No rep.', value: data.norep }
     ];
 
     // Échelle pour l'axe horizontal (proportions)
     var xScale = d3.scaleLinear()
-      .domain([0, 1])  // Plage de valeurs de 0 à 1
-      .range([0, width]);  // Échelle horizontale
+        .domain([0, 1])  // Plage de valeurs de 0 à 1
+        .range([0, width]);  // Échelle horizontale
 
     // Couleurs pour chaque mode de transport
     var color = d3.scaleOrdinal()
-      .domain(['Voiture', 'Transports urbains', 'Vélo / Pied', 'Train', 'No rep.'])
-      .range([color1, color2, color3, color4, color5]);
+        .domain(['Voiture', 'Transports urbains', 'Vélo / Pied', 'Train', 'No rep.'])
+        .range([color1, color2, color3, color4, color5]);
 
     // Créer le groupe pour contenir les segments
     var g = svg.append("g");
 
     // Ajouter les segments de la barre
-    var xPosition = 0;  // Position de départ pour la barre
+    var xPosition = 0; // Position de départ pour la barre
 
     transportData.forEach(function (d) {
-      g.append("rect")
-        .attr("x", xScale(xPosition))  // Position du segment sur l'axe horizontal
-        .attr("y", 0)  // La barre est sur l'axe horizontal, donc y = 0
-        .attr("width", xScale(d.value) - xScale(0))  // Largeur du segment (proportion du mode de transport)
-        .attr("height", height)  // La hauteur de la barre est la même pour tous les segments
-        .attr("fill", color(d.label));  // Couleur du segment
-      xPosition += d.value;  // Mettre à jour la position pour le prochain segment
+        g.append("rect")
+            .attr("x", xScale(xPosition)) // Position du segment sur l'axe horizontal
+            .attr("y", 0) // La barre est sur l'axe horizontal, donc y = 0
+            .attr("width", xScale(d.value) - xScale(0)) // Largeur du segment
+            .attr("height", height - marginBottom) // Réduire la hauteur pour laisser de la place pour les pourcentages
+            .attr("fill", color(d.label)); // Couleur du segment
+            
 
-      // Ajouter les étiquettes de pourcentage sur chaque segment
-      g.append("text")
-        .attr("x", xScale(xPosition) - (xScale(d.value) / 2))  // Position horizontale centrée sur le segment
-        .attr("y", height / 2)  // Position verticale centrée dans la barre
-        .attr("dy", ".35em")  // Pour centrer verticalement le texte
-        .attr("fill", "white")  // Couleur du texte
-        .attr("text-anchor", "middle")  // Centrer le texte
-        .text(Math.round(d.value * 100) + "%");  // Afficher le pourcentage
+        // Ajouter les étiquettes de pourcentage en bas de chaque segment
+        g.append("text")
+            .attr("x", xScale(xPosition) + (xScale(d.value) / 2)) // Position horizontale centrée sur le segment
+            .attr("y", height - marginBottom + 15) // Position verticale sous la barre
+            .attr("fill", "white") // Couleur du texte
+            .attr("text-anchor", "middle") // Centrer le texte
+            .text(Math.round(d.value * 100) + "%") // Afficher le pourcentage
+            .attr("font-family", "'DS-Digital', sans-serif"); // Appliquer la police
+
+        xPosition += d.value; // Mettre à jour la position pour le prochain segment
     });
 
     // Ajouter l'axe horizontal
     svg.append("g")
-      .attr("transform", `translate(0, ${height})`)
-      .call(d3.axisBottom(xScale).ticks(5).tickFormat(d => `${Math.round(d * 100)}%`));  // Afficher les pourcentages sur l'axe
-  }
+        // .attr("transform", translate(0, ${height - marginBottom}))
+        .call(d3.axisBottom(xScale).ticks(5).tickFormat(d => `${Math.round(d * 100)}%`));}
 
   // Fonction pour afficher le graphique circulaire des impacts (hypotheses/certitudes)
   function renderPieChart(dep) {

@@ -143,14 +143,6 @@ h3 {
   align-items: flex-start;
 }
 
-.map__pie {
-  margin-top: 20px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 10px;
-  background-color: #f9f9f9;
-}
-
 #region-info {
   font-family: Arial, sans-serif;
   color: #333;
@@ -182,7 +174,6 @@ h3 {
   border: 1px solid #ccc;
   font-size: 12px;
   pointer-events: none;
-  /* Empêche les interactions avec la boîte */
   z-index: 10;
 }
 
@@ -198,6 +189,7 @@ h3 {
 .container-legende {
   display: flex;
   gap: 5px;
+  align-items: center;
 }
 
 .square {
@@ -217,10 +209,10 @@ h3 {
   background-color: #E12436;
 }
 
-#train .square {
+#train .square, #hypothese .square {
   background-color: #1D5564;
 }
 
-#rien .square {
+#rien .square, #certitude .square {
   background-color: #FFFFFF;
 }
