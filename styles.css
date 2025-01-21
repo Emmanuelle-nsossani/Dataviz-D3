@@ -21,6 +21,7 @@ h2 {
   color: #fcab32;
   font-size: 2vw;
   position: absolute;
+  margin-left: -250px;
 }
 
 .h3 {

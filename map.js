@@ -1,7 +1,5 @@
 // Chargement du fichier CSV
 d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(function (data) {
-  // Cette fonction est appelée lorsque les données sont chargées
-  // On prépare un objet pour stocker les données par département
   let DeptTransportMeans = {};
   let DeptImpactData = {};
   let DeptGESData = {};
@@ -36,7 +34,6 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
     'No rep.': 0
   };
 
-  // Remplir DeptTransportMeans et DeptImpactData avec les données pertinentes pour chaque département
   data.forEach(function (row) {
     const department = row["Département"]; // Récupérer le département
     const transport = row["s22. Mode de transport"]; // Récupérer le mode de transport
@@ -54,7 +51,6 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
 
     });
 
-    // Calculer la proportion pour chaque mode de transport
     if (!DeptTransportMeans[department]) {
       DeptTransportMeans[department] = {
         voiture: 0,
@@ -65,7 +61,6 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       };
     }
 
-    // Incrémenter les valeurs en fonction du mode de transport
     if (transport === "En voiture (même si vous n'êtes pas le conducteur)") {
       DeptTransportMeans[department].voiture += 1;
     } else if (transport === "En transports en commun urbains (dont métro)") {
@@ -78,7 +73,6 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       DeptTransportMeans[department].norep += 1;
     }
 
-    // Calculer les données de impact par département
     if (!DeptImpactData[department]) {
       DeptImpactData[department] = { certitude: 0, hypothese: 0 };
     }
@@ -98,7 +92,6 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       };
     }
 
-    // Mettre à jour les données de sympathie pour le département
     if (sympathy === "...pas de sympathie du tout ?") {
       DeptSympathyData[department].noSympathy += 1;
     } else if (sympathy === "...peu de sympathie ?") {
@@ -110,7 +103,6 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
     }
   });
 
-  // Calculer la moyenne nationale
   const nationalSums = axes.reduce((acc, axis) => {
     acc[axis] = 0;
     data.forEach(function (row) {
@@ -121,7 +113,6 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
     return acc;
   }, {});
 
-  // Normaliser les données pour que chaque valeur soit entre 0 et 1 (proportions)
   Object.keys(DeptTransportMeans).forEach(function (dep) {
     const total = DeptTransportMeans[dep].voiture +
       DeptTransportMeans[dep].transports +
@@ -129,7 +120,6 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       DeptTransportMeans[dep].train +
       DeptTransportMeans[dep].norep;
 
-    // Normaliser les données
     DeptTransportMeans[dep].voiture /= total;
     DeptTransportMeans[dep].transports /= total;
     DeptTransportMeans[dep].velo_pied /= total;
@@ -137,7 +127,6 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
     DeptTransportMeans[dep].norep /= total;
   });
 
-  // Fonction pour dessiner le graphique en araignée
   function renderRadarChart(dep) {
     const svg = d3.select('.map__spider svg');
     svg.selectAll("*").remove(); // Supprimer les anciens graphiques
@@ -147,18 +136,14 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
     const radius = Math.min(width, height) / 2;
     const angleSlice = Math.PI * 2 / axes.length;
 
-    // Créer un groupe central
     const g = svg.append("g")
       .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-    // Créer l'échelle pour les axes
     const radiusScale = d3.scaleLinear().range([0, radius]);
 
-    // Ajouter les axes
     const axesData = axes.map(axis => DeptGESData[dep][axis] || 0);
     const nationalData = axes.map(axis => nationalSums[axis] || 0);
 
-    // Créer les arcs pour chaque axe
     const arc = d3.arc().innerRadius(0).outerRadius(function (d) { return radiusScale(d); });
 
     const radarLine = d3.lineRadial()
@@ -170,11 +155,10 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       .datum(axesData)
       .attr("class", "radar-line")
       .attr("d", radarLine)
-      .style("fill", "white") // Couleur du département
+      .style("fill", "white") 
       .style("stroke", "white")
       .style("stroke-width", 2);
 
-    // Créer la ligne pour les données nationales
     g.append("path")
       .datum(nationalData)
       .attr("class", "radar-line")
@@ -183,7 +167,6 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       .style("stroke", "white")
       .style("stroke-width", 2);
 
-    // Ajouter les axes (lignes des axes)
     g.selectAll(".axis")
       .data(axes)
       .enter()
@@ -200,7 +183,6 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       .style("stroke", "#ccc")
       .style("stroke-width", 1);
 
-    // Ajouter les étiquettes des axes
     g.selectAll(".axis-label")
       .data(axes)
       .enter()
@@ -219,16 +201,14 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       .attr("font-family", "'DS-Digital', sans-serif") // Appliquer la police
       .style("fill", "#fff");
   }
-  // Fonction pour afficher le graphique des modes de transport en barres horizontales
   function renderBarChart(dep) {
     var svg = d3.select('.map__transport').select("svg");
     svg.selectAll("*").remove(); // Supprimer les anciens graphiques
 
     var width = svg.attr("width");
     var height = svg.attr("height");
-    var marginBottom = 20; // Ajouter une marge pour afficher les pourcentages en bas
+    var marginBottom = 20; 
 
-    // Utiliser les données du département
     var data = DeptTransportMeans[dep] || {
       voiture: 0.6,
       transports: 0.3,
@@ -245,21 +225,17 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       { label: 'No rep.', value: data.norep }
     ];
 
-    // Échelle pour l'axe horizontal (proportions)
     var xScale = d3.scaleLinear()
-      .domain([0, 1])  // Plage de valeurs de 0 à 1
-      .range([0, width]);  // Échelle horizontale
+      .domain([0, 1])  
+      .range([0, width]);  
 
-    // Couleurs pour chaque mode de transport
     var color = d3.scaleOrdinal()
       .domain(['Voiture', 'Transports urbains', 'Vélo / Pied', 'Train', 'No rep.'])
       .range([color1, color2, color3, color4, color5]);
 
-    // Créer le groupe pour contenir les segments
     var g = svg.append("g");
 
-    // Ajouter les segments de la barre
-    var xPosition = 0; // Position de départ pour la barre
+    var xPosition = 0;
 
     transportData.forEach(function (d) {
       g.append("rect")
@@ -270,7 +246,6 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
         .attr("fill", color(d.label)); // Couleur du segment
 
 
-      // Ajouter les étiquettes de pourcentage en bas de chaque segment
       g.append("text")
         .attr("x", xScale(xPosition) + (xScale(d.value) / 2)) // Position horizontale centrée sur le segment
         .attr("y", height - marginBottom + 15) // Position verticale sous la barre
@@ -282,13 +257,10 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       xPosition += d.value; // Mettre à jour la position pour le prochain segment
     });
 
-    // Ajouter l'axe horizontal
     svg.append("g")
-      // .attr("transform", translate(0, ${height - marginBottom}))
       .call(d3.axisBottom(xScale).ticks(5).tickFormat(d => `${Math.round(d * 100)}%`));
   }
 
-  // Fonction pour afficher le graphique circulaire des impacts (hypotheses/certitudes)
   function renderPieChart(dep) {
     var svg = d3.select('.map__pie').select("svg");
     svg.selectAll("*").remove(); // Supprimer les anciens graphiques
@@ -302,7 +274,6 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
     var pie = d3.pie();
     var arc = d3.arc().innerRadius(0).outerRadius(radius);
 
-    // Calculer les proportions des impacts pour le département
     const total = DeptImpactData[dep].hypothese + DeptImpactData[dep].certitude;
     const hypotheseProportion = DeptImpactData[dep].hypothese / total;
     const certitudeProportion = DeptImpactData[dep].certitude / total;
@@ -319,7 +290,6 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       .attr("fill", (d, i) => color(i))
       .attr("d", arc);
 
-    // Ajouter les étiquettes de pourcentage pour chaque segment
     arcs.append("text")
       .attr("font-family", "'DS-Digital', sans-serif") // Appliquer la police
       .attr('dy', '20')
@@ -336,7 +306,6 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
     var width = svg.attr("width");
     var height = svg.attr("height");
 
-    // Utiliser les données de sympathie pour chaque département
     var data = DeptSympathyData[dep] || {
       noSympathy: 0,
       littleSympathy: 0,
@@ -344,7 +313,6 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       aLotOfSympathy: 0
     };
 
-    // Mettre les données dans un tableau pour dessiner le graphique
     var sympathyData = [
       { label: 'Pas de sympathie', value: data.noSympathy },
       { label: 'Peu de sympathie', value: data.littleSympathy },
@@ -352,36 +320,29 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       { label: 'Beaucoup de sympathie', value: data.aLotOfSympathy }
     ];
 
-    // Calculer la somme totale des valeurs
     var total = sympathyData.reduce((sum, d) => sum + d.value, 0);
 
-    // Si la somme totale est supérieure à 0, normaliser les valeurs
     if (total > 0) {
       sympathyData.forEach(d => {
         d.value = d.value / total;  // Calculer la proportion de chaque valeur
       });
     }
 
-    // Échelle pour l'axe vertical (proportions)
     var yScale = d3.scaleLinear()
       .domain([0, 1])  // Plage de valeurs de 0 à 1
       .range([height, 0]);  // Échelle verticale
 
-    // Échelle pour l'axe horizontal (espacement des barres)
     var xScale = d3.scaleBand()
       .domain(sympathyData.map(d => d.label))  // Les étiquettes des barres
       .range([0, width])  // Plage horizontale
       .padding(0.1);  // Espacement entre les barres
 
-    // Couleurs pour chaque niveau de sympathie
     var color = d3.scaleOrdinal()
       .domain(['Pas de sympathie', 'Peu de sympathie', 'Assez de sympathie', 'Beaucoup de sympathie'])
       .range([color1, color2, color3, color4]);
 
-    // Créer le groupe pour contenir les barres
     var g = svg.append("g");
 
-    // Ajouter les barres verticales
     g.selectAll(".bar")
       .data(sympathyData)
       .enter().append("rect")
@@ -392,7 +353,6 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       .attr("height", d => height - yScale(d.value))  // Hauteur de la barre, calculée en fonction de la valeur
       .attr("fill", d => color(d.label));  // Couleur des barres
 
-    // Ajouter les étiquettes de pourcentage sur chaque barre
     g.selectAll(".text")
       .data(sympathyData)
       .enter().append("text")
@@ -404,12 +364,10 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
       .attr("text-anchor", "middle")  // Centrer le texte
       .text(d => Math.round(d.value * 100) + "%");  // Afficher le pourcentage
 
-    // Ajouter l'axe horizontal pour les étiquettes des barres
     svg.append("g")
       .attr("transform", `translate(0, ${height})`)  // Déplacer l'axe à la base du graphique
       .call(d3.axisBottom(xScale));  // Afficher les étiquettes sur l'axe horizontal
 
-    // Ajouter l'axe vertical
     svg.append("g")
       .call(d3.axisLeft(yScale).ticks(5).tickFormat(d => `${Math.round(d * 100)}%`));  // Afficher les pourcentages sur l'axe vertical
   }
@@ -420,7 +378,6 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
   const departement_name = document.getElementById("departement-name");
   const departementNameSpan = document.getElementById("departement-name-h2");
 
-  // Sélectionne tous les départements
   const departments = document.querySelectorAll("#carte-france path");
 
   departments.forEach(department => {
@@ -432,26 +389,29 @@ d3.csv("barometre-representations-sociales-du-changement-climatique.csv").then(f
     });
 
     department.addEventListener("mousemove", (event) => {
-      // Met à jour la position du departement_name
-      departement_name.style.top = event.pageY + 10 + "px";
-      departement_name.style.left = event.pageX + 10 + "px";
+      const xValue = event.pageX + 10;
+      const yValue = event.pageY + 10;
+
+      if (!isNaN(xValue) && !isNaN(yValue)) {
+        departement_name.style.top = `${yValue}px`;
+        departement_name.style.left = `${xValue}px`;
+      }
     });
 
     department.addEventListener("mouseout", () => {
-      // Cache le departement_name
       departement_name.style.visibility = "hidden";
-      departementNameSpan.textContent = ""; // Vide le contenu du span au survol en dehors
+      departementNameSpan.textContent = ""; 
     });
+  });
 
-    // Gestion des interactions pour survol
-    paths.forEach(function (path) {
-      path.addEventListener('mouseenter', function () {
-        var dep = path.getAttribute("name");
-        renderBarChart(dep); // Met à jour le graphique en barres avec les données du département
-        renderPieChart(dep); // Met à jour le graphique circulaire avec les données du département
-        renderRadarChart(dep);
-        renderSympathyChart(dep);
-      });
+  paths.forEach(function (path) {
+    path.addEventListener('mouseenter', function () {
+      var dep = path.getAttribute("name");
+      renderBarChart(dep);
+      renderPieChart(dep);
+      renderRadarChart(dep);
+      renderSympathyChart(dep);
     });
   });
 });
+
