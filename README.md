@@ -17,4 +17,4 @@ Ce projet est une visualisation de données interactive développée avec **D3.j
 ## 💻 Installation  
 1. Clone le repository :  
    ```bash
-   git clone https://github.com/ton-profil/ton-projet.git
+   git clone https://github.com/Emmanuelle-nsossani/Dataviz-D3.git
